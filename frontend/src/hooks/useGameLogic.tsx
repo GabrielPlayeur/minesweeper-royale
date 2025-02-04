@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { countFlags, countRemainingCells, getNeighbors, getRemainingCells, } from "../utils/gridHelpers";
 import { Socket } from "socket.io-client";
 import { Grid, initialGameState, ResultEndGame, ResultOnReveal, XY } from "../config/types";
@@ -10,6 +11,7 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
   const [dig, setDig] = useState(true);
   const [placedFlags, setFlags] = useState(countFlags(initialGrid));
   const [remainingCells, setRemaining] = useState(countRemainingCells(initialGrid));
+  const navigate = useNavigate();
 
   useEffect(() => {
     setRemaining(countRemainingCells(grid));
@@ -39,7 +41,8 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
         console.warn("No match assigned! Redirecting...");
         window.location.href = "/";
       } else if (data.eliminated) {
-        alert("You lost !!");
+        console.log("lose by clicking bomb");
+        navigate("/");
       } else if (data.cells) {
         setGrid((prevGrid) => {
           const newGrid = [...prevGrid];
@@ -47,18 +50,27 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
           return newGrid;
         });
       }
+    });
 
-      socket.on("gameStatus", (data: ResultEndGame) => {
-        if (data.error === "NO_MATCH") {
-          console.warn("No match assigned! Redirecting...");
-          window.location.href = "/";
-        } else if (data.eliminated) {
-          alert("You lost !!");
-        } else if (data.win && data.grid) {
-          // alert('You win !!')
-          setGrid([...data.grid.map(row => [...row])]);
+    socket.on("gameStatus", (data) => {
+      if (data.error === "NO_MATCH") {
+        console.warn("No match assigned! Redirecting...");
+        window.location.href = "/";
+      } else if (data.eliminated) {
+        console.log("lose");
+        navigate("/");
+      } else if (data.win && data.grid) {
+        setGrid(data.grid); // game win
+      }  else if (data.winner){
+        if (data.winner[0] === socket.id){
+          console.log("win");
+          navigate("/"); // match win
         }
-      });
+        else{
+          navigate("/");
+          console.log("lose by time");
+        }
+      }
     });
 
     return () => {

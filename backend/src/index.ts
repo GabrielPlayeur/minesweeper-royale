@@ -10,6 +10,8 @@ import {
     playPlayerAction,
     startMatch,
     getPlayersName,
+    havePlayerWinMatch,
+    playerAssigment,
 } from './matchManagers';
 import { config } from './config/constants';
 
@@ -52,20 +54,28 @@ io.on('connection', (socket: Socket) => {
     });
 
     socket.on('requestGameState', () => {
-        console.log(`Sending gameState to ${socket.id}`);
-        const initialGameState = getFirstGame(socket.id);
+        var playerId = socket.id;
+        console.log(`Sending gameState to ${playerId}`);
+        const initialGameState = getFirstGame(playerId);
         socket.emit('gameState', initialGameState);
     });
 
     socket.on('revealCell', ({ x, y }) => {
-        console.log(`Received revealCell event from ${socket.id}: (${x}, ${y})`);
-        const result = playPlayerAction(socket.id, x, y);
+        var playerId = socket.id;
+        var matchId = playerAssigment[playerId];
+        console.log(`Received revealCell event from ${playerId}: (${x}, ${y})`);
+        const result = playPlayerAction(playerId, x, y);
         socket.emit('gameUpdate', result);
+        const ending = havePlayerWinMatch(matchId);
+        if (ending.winner && ending.winner.length === 1) {
+            io.emit('gameStatus', ending);
+        }
     });
 
     socket.on('isGridValid', ({ cells }) => {
-        console.log(`Received isGridValid event from ${socket.id}`);
-        const result = havePlayerWinGame(socket.id, cells);
+        var playerId = socket.id;
+        console.log(`Received isGridValid event from ${playerId}`);
+        const result = havePlayerWinGame(playerId, cells);
         socket.emit('gameStatus', result);
         if (result.win) io.emit('timerStart', { time: 0 }); // TODO: don't send to every player connect
     });

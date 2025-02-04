@@ -20,7 +20,7 @@ setInterval(() => matchs.forEach(match => checkTimeouts(match)), 1000);
 
 function getPlayerAssignment(playerId: string): number | null {
     if (playerAssigment[playerId] === undefined) {
-        console.warn(`ERROR: Player ${playerId} has no match assigned.`);
+        console.log(`ERROR: Player ${playerId} has no match assigned.`);
         return null;
     }
     return playerAssigment[playerId];
@@ -86,6 +86,17 @@ export function havePlayerWinGame(playerId: string, lastCells: String[]) {
     if (match.curLevel === level) incrToNextLevel(match);
     incrPlayerToNextLevel(match, playerId);
     return { win: true, grid: match.games[match.curLevel].grid };
+}
+
+export function havePlayerWinMatch(matchId: number) {
+    const match = getMatch(matchId);
+    if (match === null) return { error: 'NO_MATCH' };
+    var winner: string[] = [];
+    var loser: string[] = [];
+    Object.entries(match.players).forEach(([id, player]) =>
+        player.eliminated ? loser.push(id) : winner.push(id)
+    );
+    return { winner, loser };
 }
 
 export function playPlayerAction(playerId: string, x: number, y: number) {

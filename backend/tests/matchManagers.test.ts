@@ -11,6 +11,7 @@ import {
     playPlayerAction,
     getFirstGame,
     getPlayersName,
+    havePlayerWinMatch,
 } from '../src/matchManagers';
 
 describe('Match Managers module', () => {
@@ -179,5 +180,33 @@ describe('Match Managers module', () => {
         leaveMatch('123');
         leaveMatch('456');
         expect(getPlayersName(matchs[0])).toEqual([]);
+    });
+
+    test('Check if a player win a match', () => {
+        var ret = havePlayerWinMatch('123');
+        expect(ret).toEqual({ error: 'NO_MATCH' });
+
+        playerAssigment['123'] = 9;
+        ret = havePlayerWinMatch('123');
+        expect(ret).toEqual({ error: 'NO_MATCH' });
+
+        findMatch('123', 'test');
+        ret = havePlayerWinMatch('123');
+        expect(ret).toEqual({ winner: ['123'], eliminated: [] });
+
+        findMatch('456', 'test2');
+        ret = havePlayerWinMatch('123');
+        expect(ret).toEqual({ winner: ['123', '456'], eliminated: [] });
+        expect(ret).toEqual(havePlayerWinMatch('456'));
+
+        matchs[0].players['456'].eliminated = true;
+        ret = havePlayerWinMatch('123');
+        expect(ret).toEqual({ winner: ['123'], eliminated: ['456'] });
+        expect(ret).toEqual(havePlayerWinMatch('456'));
+
+        matchs[0].players['123'].eliminated = true;
+        ret = havePlayerWinMatch('123');
+        expect(ret).toEqual({ winner: [], eliminated: ['123', '456'] });
+        expect(ret).toEqual(havePlayerWinMatch('456'));
     });
 });

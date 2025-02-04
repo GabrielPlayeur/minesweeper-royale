@@ -40,4 +40,6 @@ export type ResultOnReveal = Result & {
 export type ResultEndGame = Result & {
     win?: boolean;
     grid?: Grid;
+    winner?: string[];
+    eliminated?: string[];
 }
