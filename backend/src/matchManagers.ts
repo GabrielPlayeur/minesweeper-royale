@@ -26,8 +26,8 @@ function getPlayerAssignment(playerId: string): number | null {
     return playerAssigment[playerId];
 }
 
-function getMatch(id: number | null): Match | null {
-    if (id === null || id < 0 || id >= matchs.length) {
+function getMatch(id: number | null | undefined): Match | null {
+    if (id === null || id === undefined || id < 0 || id >= matchs.length) {
         console.warn(`ERROR: Invalid match ID: ${id}`);
         return null;
     }
