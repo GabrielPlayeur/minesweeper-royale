@@ -31,7 +31,7 @@ io.on('connection', (socket: Socket) => {
         if (match === undefined)
             // player already in a queue
             return;
-        console.log(`Add player ${playerId} into match : ${match.id}`);
+        console.log(`Add player ${playerId} into match : ${match.id}  on room ${match.name}`);
 
         //join the room
         socket.join(match.name);
@@ -40,7 +40,7 @@ io.on('connection', (socket: Socket) => {
             nb_player_per_match: config.NB_PLAYER_PER_MATCH,
         });
         if (canLaunchMatch(match.id)) {
-            console.log(`Start match ${match.id}`);
+            console.log(`Start match ${match.id} on room ${match.name}`);
             const initialGameState = startMatch(match.id);
             io.to(match.name).emit('matchFound', initialGameState);
         }
@@ -68,23 +68,28 @@ io.on('connection', (socket: Socket) => {
         var playerId = socket.id;
         var matchId = playerAssigment[playerId];
         const matchName = getMatchFromPlayer(playerId)?.name;
-        console.log(`Received revealCell event from ${playerId}: (${x}, ${y})`);
         const result = playPlayerAction(playerId, x, y);
-        socket.emit('gameUpdate', result);
         const ending = havePlayersWinMatch(matchId);
-        if (ending.winner && ending.winner.length === 1 && matchName) {
-            io.to(matchName).emit('gameStatus', ending);        //TODO: handle case with no matchName
+        socket.emit('gameUpdate', result);
+        console.log(`Received revealCell event from ${playerId}: (${x}, ${y}) in match ${matchName}`);
+        if (matchName) {            //TODO: handle case with no matchName
+            console.log(`Sending gameUpdate to ${matchName}`);
+            if (ending.winner && ending.winner.length === 1 && matchName) {
+                io.to(matchName).emit('gameStatus', ending);
+            }
         }
     });
 
-    socket.on('isGridValid', ({ cells }) => {   // Maybe change the name of the event to checkGrid
+    socket.on('isGridValid', ({ cells }) => {   // Maybe change the name of the event to 'checkGrid'
         var playerId = socket.id;
-        console.log(`Received isGridValid event from ${playerId}`);
         const result = hasPlayerWinGame(playerId, cells);
-        socket.emit('gameStatus', result);
         const matchName = getMatchFromPlayer(playerId)?.name;
-        if (result.win && matchName) {
-            io.to(matchName).emit('timerStart', { time: 0 }); //TODO: handle case with no matchName 
+        socket.emit('gameStatus', result);
+        console.log(`Received isGridValid event from ${playerId} in match ${matchName}`);
+        if (matchName) {            //TODO: handle case with no matchName 
+            if (result.win) {
+                io.to(matchName).emit('timerStart', { time: 0 });
+            }
         }
     });
 
