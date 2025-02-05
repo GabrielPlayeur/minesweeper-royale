@@ -39,7 +39,7 @@ function getMatch(id: number | null): Match | null {
  */
 export function findMatch(playerId: string, playerName: string) {
     if (matchs.length === 0 || matchs[matchs.length - 1].launch === true)
-        matchs.push(createNewMatch(matchs.length));
+        matchs.push(createNewMatch(matchs.length, "match-" + matchs.length));
     if (playerAssigment[playerId] !== undefined && getMatch(playerAssigment[playerId])?.launch === false)
         return;
     addPlayerInMatch(matchs[matchs.length - 1], playerId, playerName);
@@ -73,11 +73,9 @@ export function canLaunchMatch(matchId: number) {
     return isMatchReadyToStart(match) && match.launch === false;
 }
 
-export function havePlayerWinGame(playerId: string, lastCells: String[]) {
-    const matchId = getPlayerAssignment(playerId);
-    if (matchId === null) return { error: 'NO_MATCH' };
-    const match = getMatch(matchId);
-    if (match === null) return { error: 'NO_MATCH' };
+export function hasPlayerWinGame(playerId: string, lastCells: String[]) {
+    const match = getMatchFromPlayer(playerId);
+    if (!match) return { error: 'NO_MATCH' };
     var player = getPlayer(match.players, playerId);
     if (player.eliminated) return { eliminated: true };
     var level = player.level;
@@ -88,7 +86,8 @@ export function havePlayerWinGame(playerId: string, lastCells: String[]) {
     return { win: true, grid: match.games[match.curLevel].grid };
 }
 
-export function havePlayerWinMatch(matchId: number) {
+/** return the list of the winner and the looser from a match */
+export function havePlayersWinMatch(matchId: number) {
     const match = getMatch(matchId);
     if (match === null) return { error: 'NO_MATCH' };
     var winner: string[] = [];
@@ -99,11 +98,18 @@ export function havePlayerWinMatch(matchId: number) {
     return { winner, loser };
 }
 
-export function playPlayerAction(playerId: string, x: number, y: number) {
+export function getMatchFromPlayer(playerId: string) {
     const matchId = getPlayerAssignment(playerId);
-    if (matchId === null) return { error: 'NO_MATCH' };
+    if (matchId === null) return;
     const match = getMatch(matchId);
-    if (match === null) return { error: 'NO_MATCH' };
+    if (match === null) return;
+    return match;
+}
+
+/** Reveal the cell x,y and return either eliminated or the list of the revealed cells*/
+export function playPlayerAction(playerId: string, x: number, y: number) {
+    const match = getMatchFromPlayer(playerId);
+    if (!match) return { error: 'NO_MATCH' };
     var player = getPlayer(match.players, playerId);
     var game = match.games[player.level];
     var cells = revealCells(game.bombs, game.solveGrid, x, y);
@@ -135,3 +141,5 @@ export function clearMatchs() {
     matchs = [];
     playerAssigment = {};
 }
+
+// export function getMatchName(playerId: string)

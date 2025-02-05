@@ -6,6 +6,7 @@ type Games = Game[];
 
 export interface Match {
     id: number;
+    name: string;
     games: Games;
     players: Players;
     nbPlayers: number;
@@ -13,12 +14,12 @@ export interface Match {
     launch: boolean;
 }
 
-export function createNewMatch(id: number) {
+export function createNewMatch(id: number, name: string): Match {
     var games = [];
     var players = {};
     var curLevel = 0;
     games.push(generateGame(curLevel));
-    return { id, games, players, nbPlayers: 0, curLevel, launch: false };
+    return { id, name, games, players, nbPlayers: 0, curLevel, launch: false };
 }
 
 export function addPlayerInMatch(match: Match, playerId: string, playerName: string) {
