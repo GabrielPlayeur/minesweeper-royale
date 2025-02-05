@@ -178,6 +178,8 @@ describe('Match Managers module', () => {
         expect(getPlayersName(matchs[0])).toEqual(['test', 'test2']);
 
         leaveMatch('123');
+        expect(getPlayersName(matchs[0])).toEqual(['test2']);
+
         leaveMatch('456');
         expect(getPlayersName(matchs[0])).toEqual([]);
     });
@@ -187,6 +189,14 @@ describe('Match Managers module', () => {
         expect(ret).toEqual({ error: 'NO_MATCH' });
 
         findMatch('123', 'test');
+
+        ret = havePlayersWinMatch(1);
+        expect(ret).toEqual({ error: 'NO_MATCH' });
+        ret = havePlayersWinMatch(-1);
+        expect(ret).toEqual({ error: 'NO_MATCH' });
+        ret = havePlayersWinMatch(playerAssigment['456']);
+        expect(ret).toEqual({ error: 'NO_MATCH' });
+
         ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: ['123'], loser: [] });
 
