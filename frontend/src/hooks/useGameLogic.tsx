@@ -41,8 +41,7 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
         console.warn("No match assigned! Redirecting...");
         window.location.href = "/";
       } else if (data.eliminated) {
-        console.log("lose by clicking bomb");
-        navigate("/");
+        navigate("/end", { state: { result: "lose_bomb" } });
       } else if (data.cells) {
         setGrid((prevGrid) => {
           const newGrid = [...prevGrid];
@@ -58,17 +57,16 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
         window.location.href = "/";
       } else if (data.eliminated) {
         console.log("lose");
-        navigate("/");
+        navigate("/end", { state: { result: "lose" } });
       } else if (data.win && data.grid) {
         setGrid(data.grid); // game win
       }  else if (data.winner){
         if (data.winner[0] === socket.id){
           console.log("win");
-          navigate("/"); // match win
+          navigate("/end", { state: { result: "win" } }); // match win
         }
         else{
-          navigate("/");
-          console.log("lose by time");
+          navigate("/end", { state: { result: "lose_time" } });
         }
       }
     });
