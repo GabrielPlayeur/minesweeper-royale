@@ -39,7 +39,7 @@ function getMatch(id: number | null | undefined): Match | null {
  */
 export function findMatch(playerId: string, playerName: string) {
     if (matchs.length === 0 || matchs[matchs.length - 1].launch === true)
-        matchs.push(createNewMatch(matchs.length, "match-" + matchs.length));
+        matchs.push(createNewMatch(matchs.length, 'match-' + matchs.length));
     if (playerAssigment[playerId] !== undefined && getMatch(playerAssigment[playerId])?.launch === false)
         return;
     addPlayerInMatch(matchs[matchs.length - 1], playerId, playerName);

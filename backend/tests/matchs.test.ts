@@ -14,13 +14,13 @@ describe('Matchs module', () => {
     let match: Match;
 
     beforeEach(() => {
-        match = createNewMatch(0, "match-0");
+        match = createNewMatch(0, 'match-0');
     });
 
     test('Create a match', () => {
         expect(match).toEqual({
             id: 0,
-            name: "match-0",
+            name: 'match-0',
             games: match.games,
             players: {},
             nbPlayers: 0,

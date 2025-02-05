@@ -72,7 +72,8 @@ io.on('connection', (socket: Socket) => {
         const ending = havePlayersWinMatch(matchId);
         socket.emit('gameUpdate', result);
         console.log(`Received revealCell event from ${playerId}: (${x}, ${y}) in match ${matchName}`);
-        if (matchName) {            //TODO: handle case with no matchName
+        if (matchName) {
+            //TODO: handle case with no matchName
             console.log(`Sending gameUpdate to ${matchName}`);
             if (ending.winner && ending.winner.length === 1 && matchName) {
                 io.to(matchName).emit('gameStatus', ending);
@@ -80,13 +81,15 @@ io.on('connection', (socket: Socket) => {
         }
     });
 
-    socket.on('isGridValid', ({ cells }) => {   // Maybe change the name of the event to 'checkGrid'
+    socket.on('isGridValid', ({ cells }) => {
+        // Maybe change the name of the event to 'checkGrid'
         var playerId = socket.id;
         const result = hasPlayerWinGame(playerId, cells);
         const matchName = getMatchFromPlayer(playerId)?.name;
         socket.emit('gameStatus', result);
         console.log(`Received isGridValid event from ${playerId} in match ${matchName}`);
-        if (matchName) {            //TODO: handle case with no matchName 
+        if (matchName) {
+            //TODO: handle case with no matchName
             if (result.win) {
                 io.to(matchName).emit('timerStart', { time: 0 });
             }
@@ -95,7 +98,7 @@ io.on('connection', (socket: Socket) => {
 
     socket.on('disconnect', () => {
         var playerId = socket.id;
-        var rep = leaveMatch(playerId);         //Same code as updateQueue
+        var rep = leaveMatch(playerId); //Same code as updateQueue
         if (rep.error || !rep.match) return;
         socket.leave(rep.match.name);
         io.to(rep.match.name).emit('updateQueue', {
