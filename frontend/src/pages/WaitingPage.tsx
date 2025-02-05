@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "./ui/card";
 import useSocket from "../hooks/useSocket";
+import { Card, CardContent } from "../components/ui/card";
 
 
 const WaitingPage = () => {
@@ -37,7 +37,7 @@ const WaitingPage = () => {
       <p>Waiting players : {playersWaiting.length} / {nbPlayerPerMatch}</p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
         {[...Array(nbPlayerPerMatch)].map((_, index) => {
-          const player = index<playersWaiting.length ? playersWaiting[index] : null;
+          const player = index < playersWaiting.length ? playersWaiting[index] : null;
           return (
             <Card
               key={index}

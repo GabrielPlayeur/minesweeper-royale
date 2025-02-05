@@ -1,8 +1,9 @@
+// @ts-nocheck
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./components/HomePage";
-import GameBoard from "./components/GameBoard";
-import WaitingPage from "./components/WaitingPage";
+import HomePage from "./pages/HomePage";
+import GameBoard from "./pages/GameBoard";
+import WaitingPage from "./pages/WaitingPage";
 
 const App = () => {
   return (

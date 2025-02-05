@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { Stage } from "@pixi/react";
 import useSocket from "../hooks/useSocket";
 import useGameLogic from "../hooks/useGameLogic";
-import Cell from "./Cell";
-import GameStatus from "./GameStatus";
+import Cell from "../components/Cell";
+import GameStatus from "../components/GameStatus";
 import { GRID_SIZE, CELL_SIZE } from "../config/constants";
 
 const GameBoard = () => {
@@ -16,8 +16,11 @@ const GameBoard = () => {
   }, [socket]);
 
   return (
-    <div className="game-board">
-      <GameStatus placeFlags={placedFlags} remainingCells={remainingCells} />
+    <div className="flex flex-row justify-between items-center">
+      <div className="">
+        <GameStatus placeFlags={placedFlags} remainingCells={remainingCells} />
+        <button onClick={toggleDig}>{dig ? "🔨 Dig" : "🚩 Flag"}</button>
+      </div>
       <Stage
         width={GRID_SIZE * CELL_SIZE}
         height={GRID_SIZE * CELL_SIZE}
@@ -34,7 +37,9 @@ const GameBoard = () => {
           ))
         )}
       </Stage>
-      <button onClick={toggleDig}>{dig ? "🔨 Dig" : "🚩 Flag"}</button>
+      <div>
+        <RankingComponnent />
+      </div>
     </div>
   );
 };
