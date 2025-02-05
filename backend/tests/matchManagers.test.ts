@@ -7,11 +7,11 @@ import {
     leaveMatch,
     startMatch,
     canLaunchMatch,
-    havePlayerWinGame,
+    hasPlayerWinGame,
     playPlayerAction,
     getFirstGame,
     getPlayersName,
-    havePlayerWinMatch,
+    havePlayersWinMatch,
 } from '../src/matchManagers';
 
 describe('Match Managers module', () => {
@@ -99,24 +99,24 @@ describe('Match Managers module', () => {
     });
 
     test('Check if a player win a game', () => {
-        var ret = havePlayerWinGame('123', []);
+        var ret = hasPlayerWinGame('123', []);
         expect(ret).toEqual({ error: 'NO_MATCH' });
 
         playerAssigment['123'] = 9;
-        ret = havePlayerWinGame('123', []);
+        ret = hasPlayerWinGame('123', []);
         expect(ret).toEqual({ error: 'NO_MATCH' });
 
         findMatch('123', 'test');
         startMatch(0);
-        ret = havePlayerWinGame('123', []);
+        ret = hasPlayerWinGame('123', []);
         expect(ret).toEqual({ win: false });
 
         var bombs: string[] = Array.from(matchs[0].games[0].bombs);
-        ret = havePlayerWinGame('123', bombs);
+        ret = hasPlayerWinGame('123', bombs);
         expect(ret).toEqual({ win: true, grid: matchs[0].games[1].grid });
 
         matchs[0].players['123'].eliminated = true;
-        ret = havePlayerWinGame('123', []);
+        ret = hasPlayerWinGame('123', []);
         expect(ret).toEqual({ eliminated: true });
     });
 
@@ -185,34 +185,34 @@ describe('Match Managers module', () => {
     });
 
     test('Check if a player win a match', () => {
-        var ret = havePlayerWinMatch(0);
+        var ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ error: 'NO_MATCH' });
 
         findMatch('123', 'test');
 
-        ret = havePlayerWinMatch(1);
+        ret = havePlayersWinMatch(1);
         expect(ret).toEqual({ error: 'NO_MATCH' });
-        ret = havePlayerWinMatch(-1);
+        ret = havePlayersWinMatch(-1);
         expect(ret).toEqual({ error: 'NO_MATCH' });
-        ret = havePlayerWinMatch(playerAssigment['456']);
+        ret = havePlayersWinMatch(playerAssigment['456']);
         expect(ret).toEqual({ error: 'NO_MATCH' });
 
-        ret = havePlayerWinMatch(0);
+        ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: ['123'], loser: [] });
 
         findMatch('456', 'test2');
-        ret = havePlayerWinMatch(0);
+        ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: ['123', '456'], loser: [] });
-        expect(ret).toEqual(havePlayerWinMatch(0));
+        expect(ret).toEqual(havePlayersWinMatch(0));
 
         matchs[0].players['456'].eliminated = true;
-        ret = havePlayerWinMatch(0);
+        ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: ['123'], loser: ['456'] });
-        expect(ret).toEqual(havePlayerWinMatch(0));
+        expect(ret).toEqual(havePlayersWinMatch(0));
 
         matchs[0].players['123'].eliminated = true;
-        ret = havePlayerWinMatch(0);
+        ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: [], loser: ['123', '456'] });
-        expect(ret).toEqual(havePlayerWinMatch(0));
+        expect(ret).toEqual(havePlayersWinMatch(0));
     });
 });
