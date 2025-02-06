@@ -14,6 +14,7 @@ import {
     playerAssigment,
     getMatchFromPlayerId,
     getMatchProgress,
+    getPlayerRemainingTime,
 } from './matchManagers';
 import { config } from './config/constants';
 
@@ -103,11 +104,15 @@ io.on('connection', (socket: Socket) => {
     socket.on('isGridValid', ({ cells }) => {
         try {
             const playerId = socket.id;
-            const matchName = getMatchFromPlayerId(playerId).name;
-            console.log(`Received isGridValid event from ${playerId} in match ${matchName}`);
+            const match = getMatchFromPlayerId(playerId);
+            console.log(`Received isGridValid event from ${playerId} in match ${match.name}`);
             const result = hasPlayerWinGame(playerId, cells);
-            socket.emit('gameStatus', result);
-            if (result.win) io.to(matchName).emit('timerStart', { time: 0 }); // TODO:change with the left time
+            socket.emit('gameStatus', result); // TODO: send a timer here or store timer in the front ???
+            if (result.win)
+                io.to(match.name).emit('timerStart', {
+                    level: match.curLevel - 1,
+                    time: getPlayerRemainingTime(playerId),
+                });
         } catch (error) {
             if (error instanceof Error) {
                 socket.emit('error', { type: error.name, message: error.message });

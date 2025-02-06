@@ -1,6 +1,7 @@
 import { config } from '../config/constants';
-import { PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../errors/match.error';
-import { Game, generateGame } from './games';
+import { GameNotFoundError } from '../errors/game.error';
+import { MatchNotFoundError, PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../errors/match.error';
+import { Game, generateGame, getRemainingTime } from './games';
 import { Players, addPlayer, getPlayer, incrPlayerLevel, removePlayer, setPlayerEliminated } from './players';
 
 type Games = Game[];
@@ -13,6 +14,19 @@ export interface Match {
     nbPlayers: number;
     curLevel: number;
     launch: boolean;
+}
+
+export function getGame(match: Match, level: number): Game {
+    if (level === null || level === undefined || level < 0 || level >= match.games.length) {
+        console.log(`ERROR: Invalid game level: ${level}`);
+        throw new GameNotFoundError();
+    }
+    return match.games[level];
+}
+
+export function getGameRemainingTime(match: Match, level: number) {
+    const game = getGame(match, level);
+    return getRemainingTime(game);
 }
 
 export function createNewMatch(id: number, name: string): Match {

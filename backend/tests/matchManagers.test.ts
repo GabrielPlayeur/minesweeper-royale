@@ -21,6 +21,7 @@ import {
     getPlayerAssignment,
     getMatch,
     getMatchProgress,
+    getPlayerRemainingTime,
 } from '../src/matchManagers';
 
 describe('Match Managers module', () => {
@@ -206,5 +207,10 @@ describe('Match Managers module', () => {
     test('Get the match progress', () => {
         findMatch('123', 'test');
         expect(getMatchProgress(0)).toEqual({ '123': { name: 'test', progress: 0, level: 0 } });
+    });
+
+    test('Get player remaining time to finish a game', () => {
+        findMatch('123', 'test');
+        getPlayerRemainingTime('123');
     });
 });

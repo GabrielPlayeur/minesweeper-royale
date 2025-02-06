@@ -7,8 +7,11 @@ import {
     isMatchReadyToStart,
     checkTimeouts,
     Match,
+    getGame,
+    getGameRemainingTime,
 } from '../src/components/matchs';
 import { config } from '../src/config/constants';
+import { GameNotFoundError } from '../src/errors/game.error';
 import { PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../src/errors/match.error';
 
 describe('Matchs module', () => {
@@ -92,5 +95,18 @@ describe('Matchs module', () => {
         checkTimeouts(match);
         expect(match.players['123'].eliminated).toEqual(false);
         expect(match.players['456'].eliminated).toEqual(true);
+    });
+
+    test('Get a game', () => {
+        expect(() => getGame(match, 1)).toThrow(GameNotFoundError);
+
+        addPlayerInMatch(match, '123', 'test');
+        var ret = getGame(match, 0);
+        expect(ret).toEqual(match.games[0]);
+    });
+
+    test('Get a game', () => {
+        addPlayerInMatch(match, '123', 'test');
+        var ret = getGameRemainingTime(match, 0);
     });
 });

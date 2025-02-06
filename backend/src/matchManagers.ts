@@ -1,5 +1,5 @@
 import { getPlayer, incrPlayerProgress, setPlayerEliminated } from './components/players';
-import { isGameWin, revealCells } from './components/games';
+import { Game, isGameWin, revealCells } from './components/games';
 import {
     Match,
     addPlayerInMatch,
@@ -9,6 +9,7 @@ import {
     isMatchReadyToStart,
     checkTimeouts,
     removePlayerInMatch,
+    getGameRemainingTime,
 } from './components/matchs';
 import { Cell, config } from './config/constants';
 import { MatchNotFoundError, NoMatchAssignedError, PlayerAlreadyInMatchError } from './errors/match.error';
@@ -125,13 +126,19 @@ export function getPlayersName(match: Match) {
 }
 
 export function getMatchProgress(matchId: number) {
-    var match = getMatch(matchId);
+    const match = getMatch(matchId);
     var res: Record<string, { name: string; progress: number; level: number }> = {};
     Object.keys(match.players).forEach(playerId => {
         var player = match.players[playerId];
         res[playerId] = { name: player.name, progress: player.progress.size, level: player.level };
     });
     return res;
+}
+
+export function getPlayerRemainingTime(playerId: string) {
+    const match = getMatchFromPlayerId(playerId);
+    const player = getPlayer(match.players, playerId);
+    return getGameRemainingTime(match, player.level);
 }
 
 /**
