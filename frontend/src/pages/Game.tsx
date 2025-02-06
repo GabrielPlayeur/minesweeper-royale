@@ -17,22 +17,17 @@ const Game = () => {
   }, [socket]);
 
   return (
-    <>
-      <div className="flex flex-col-reverse md:flex-row justify-evenly items-center">
-        <div className="h-1/4 fixed max-md:left-1/2 max-md:-translate-x-1/2 max-md:bottom-10 md:top-1/2 md:-translate-y-1/2 md:left-10">
-          <GameInfo placedFlags={placedFlags} remainingCells={remainingCells} toggleDig={toggleDig} dig={dig} />
-        </div>
-        <div className="h-1/4 top-20 right-10 fixed">
-          <LeaderBoard />
-        </div>
+    <div className="flex flex-col-reverse md:flex-row justify-evenly items-center w-full h-full">
+      <div className="h-1/4 "> {/*fixed max-md:left-1/2 max-md:-translate-x-1/2 max-md:bottom-10 md:top-1/2 md:-translate-y-1/2 md:left-10 */}
+        <GameInfo placedFlags={placedFlags} remainingCells={remainingCells} toggleDig={toggleDig} dig={dig} />
       </div>
 
-      <div className="flex justify-between items-center h-full bg-lime-400 overflow-scroll">
+      <div className="h-full w-full md:w-3/5 flex justify-between items-center overflow-auto">
         <Stage
           width={GRID_SIZE * CELL_SIZE}
           height={GRID_SIZE * CELL_SIZE}
           onContextMenu={(e) => e.preventDefault()}
-          className="mx-auto"
+          className="mx-auto h-screen"
         >
           {grid.map((row, x) => row.map((cellValue, y) => (
             <Cell
@@ -45,7 +40,10 @@ const Game = () => {
           )))}
         </Stage>
       </div>
-    </>
+      <div className="h-1/4"> {/* top-20 right-10 fixed */}
+        <LeaderBoard />
+      </div>
+    </div>
   );
 };
 
