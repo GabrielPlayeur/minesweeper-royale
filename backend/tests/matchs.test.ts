@@ -38,7 +38,7 @@ describe('Matchs module', () => {
                 name: 'test',
                 match: 0,
                 level: 0,
-                progress: 0,
+                progress: new Set(),
                 eliminated: false,
             },
         });

@@ -13,6 +13,7 @@ import {
     havePlayersWinMatch,
     playerAssigment,
     getMatchFromPlayerId,
+    getMatchProgress,
 } from './matchManagers';
 import { config } from './config/constants';
 
@@ -85,6 +86,7 @@ io.on('connection', (socket: Socket) => {
             const matchId = playerAssigment[playerId];
             const result = playPlayerAction(playerId, x, y);
             socket.emit('gameUpdate', result);
+            io.to(matchName).emit('matchProgress', getMatchProgress(matchId));
             console.log(`Sending gameUpdate to ${matchName}`);
             const ending = havePlayersWinMatch(matchId);
             if (ending.winner && ending.winner.length === 1) {

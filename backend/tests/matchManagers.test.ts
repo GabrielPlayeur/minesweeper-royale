@@ -20,6 +20,7 @@ import {
     getMatchFromPlayerId,
     getPlayerAssignment,
     getMatch,
+    getMatchProgress,
 } from '../src/matchManagers';
 
 describe('Match Managers module', () => {
@@ -200,5 +201,10 @@ describe('Match Managers module', () => {
         ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: [], loser: ['123', '456'] });
         expect(ret).toEqual(havePlayersWinMatch(0));
+    });
+
+    test('Get the match progress', () => {
+        findMatch('123', 'test');
+        expect(getMatchProgress(0)).toEqual({ '123': { name: 'test', progress: 0, level: 0 } });
     });
 });

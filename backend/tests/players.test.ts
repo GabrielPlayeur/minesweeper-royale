@@ -6,6 +6,7 @@ import {
     getPlayer,
     setPlayerEliminated,
     incrPlayerLevel,
+    incrPlayerProgress,
 } from '../src/components/players';
 import { PlayerNotFoundError } from '../src/errors/player.error';
 
@@ -24,7 +25,7 @@ describe('Players module', () => {
             name: 'Alice',
             match: 1,
             level: 0,
-            progress: 0,
+            progress: new Set(),
             eliminated: false,
         });
     });
@@ -47,14 +48,14 @@ describe('Players module', () => {
                 name: 'Alice',
                 match: 1,
                 level: 0,
-                progress: 0,
+                progress: new Set(),
                 eliminated: false,
             },
             '456': {
                 name: 'Bob',
                 match: 2,
                 level: 0,
-                progress: 0,
+                progress: new Set(),
                 eliminated: false,
             },
         });
@@ -66,7 +67,7 @@ describe('Players module', () => {
             name: 'Alice',
             match: 1,
             level: 0,
-            progress: 0,
+            progress: new Set(),
             eliminated: false,
         });
         expect(() => getPlayer(players, '456')).toThrow(PlayerNotFoundError);
@@ -84,8 +85,18 @@ describe('Players module', () => {
         addPlayer(players, '123', 'Alice', 1);
         incrPlayerLevel(players, '123');
         expect(players['123'].level).toBe(1);
-        expect(players['123'].progress).toBe(0);
+        expect(players['123'].progress).toEqual(new Set());
 
         expect(() => incrPlayerLevel(players, '456')).toThrow(PlayerNotFoundError);
+    });
+
+    test('Incr player progress', () => {
+        addPlayer(players, '123', 'Alice', 1);
+        incrPlayerProgress(players, '123', [{ x: 0, y: 0, value: 0 }]);
+        expect(players['123'].progress.size).toEqual(1);
+
+        expect(() => incrPlayerProgress(players, '456', [{ x: 0, y: 0, value: 0 }])).toThrow(
+            PlayerNotFoundError
+        );
     });
 });

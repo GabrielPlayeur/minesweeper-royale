@@ -1,4 +1,4 @@
-import { getPlayer, setPlayerEliminated } from './components/players';
+import { getPlayer, incrPlayerProgress, setPlayerEliminated } from './components/players';
 import { isGameWin, revealCells } from './components/games';
 import {
     Match,
@@ -10,7 +10,7 @@ import {
     checkTimeouts,
     removePlayerInMatch,
 } from './components/matchs';
-import { config } from './config/constants';
+import { Cell, config } from './config/constants';
 import { MatchNotFoundError, NoMatchAssignedError, PlayerAlreadyInMatchError } from './errors/match.error';
 
 type Matchs = Match[];
@@ -104,13 +104,14 @@ export function playPlayerAction(playerId: string, x: number, y: number) {
     const match = getMatchFromPlayerId(playerId);
     const player = getPlayer(match.players, playerId);
     const game = match.games[player.level];
-    const cells = revealCells(game.bombs, game.solveGrid, x, y);
+    const cells: Cell[] = revealCells(game.bombs, game.solveGrid, x, y);
     if (cells.length === 0 || player.eliminated === true) {
         // Player lost
         delete playerAssigment[playerId];
         setPlayerEliminated(match.players, playerId);
         return { cells, eliminated: true };
     }
+    incrPlayerProgress(match.players, playerId, cells);
     return { cells, eliminated: false };
 }
 
@@ -121,6 +122,16 @@ export function getFirstGame(playerId: string) {
 
 export function getPlayersName(match: Match) {
     return Object.values(match.players).map(player => player.name);
+}
+
+export function getMatchProgress(matchId: number) {
+    var match = getMatch(matchId);
+    var res: Record<string, { name: string; progress: number; level: number }> = {};
+    Object.keys(match.players).forEach(playerId => {
+        var player = match.players[playerId];
+        res[playerId] = { name: player.name, progress: player.progress.size, level: player.level };
+    });
+    return res;
 }
 
 /**

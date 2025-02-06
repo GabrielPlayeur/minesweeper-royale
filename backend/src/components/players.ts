@@ -1,10 +1,11 @@
+import { Cell } from '../config/constants';
 import { PlayerNotFoundError } from '../errors/player.error';
 
 export interface Player {
     name: string;
     match: number;
     level: number;
-    progress: number;
+    progress: Set<Cell>;
     eliminated: boolean;
 }
 
@@ -15,7 +16,7 @@ export function addPlayer(players: Players, id: string, name: string, matchId: n
         name: name,
         match: matchId,
         level: 0,
-        progress: 0,
+        progress: new Set(),
         eliminated: false,
     };
 }
@@ -42,5 +43,10 @@ export function setPlayerEliminated(players: Players, id: string) {
 export function incrPlayerLevel(players: Players, id: string) {
     if (players[id] === undefined) throw new PlayerNotFoundError();
     players[id].level++;
-    players[id].progress = 0;
+    players[id].progress = new Set();
+}
+
+export function incrPlayerProgress(players: Players, id: string, cells: Cell[]) {
+    if (players[id] === undefined) throw new PlayerNotFoundError();
+    cells.forEach(cell => players[id].progress.add(cell));
 }

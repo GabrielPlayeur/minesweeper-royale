@@ -14,4 +14,5 @@ export const DIRS: [number, number][] = [
     [1, 1],
 ];
 export type Grid = number[][];
+export type Cell = { x: number; y: number; value: number };
 export const TIMER_EVOLUTION: number[] = [30, 20, 10, 5, 3, 1];
