@@ -43,7 +43,7 @@ io.on('connection', (socket: Socket) => {
             }
         } catch (error) {
             if (error instanceof Error) {
-                socket.emit("error", { type: error.name, message: error.message });
+                socket.emit('error', { type: error.name, message: error.message });
             }
         }
     });
@@ -59,7 +59,7 @@ io.on('connection', (socket: Socket) => {
             });
         } catch (error) {
             if (error instanceof Error) {
-                socket.emit("error", { type: error.name, message: error.message });
+                socket.emit('error', { type: error.name, message: error.message });
             }
         }
     });
@@ -72,7 +72,7 @@ io.on('connection', (socket: Socket) => {
             socket.emit('gameState', initialGameState);
         } catch (error) {
             if (error instanceof Error) {
-                socket.emit("error", { type: error.name, message: error.message });
+                socket.emit('error', { type: error.name, message: error.message });
             }
         }
     });
@@ -80,19 +80,20 @@ io.on('connection', (socket: Socket) => {
     socket.on('revealCell', ({ x, y }) => {
         try {
             const playerId = socket.id;
-            const matchId = playerAssigment[playerId];
             const matchName = getMatchFromPlayerId(playerId).name;
-            const result = playPlayerAction(playerId, x, y);
-            const ending = havePlayersWinMatch(matchId);
-            socket.emit('gameUpdate', result);
             console.log(`Received revealCell event from ${playerId}: (${x}, ${y}) in match ${matchName}`);
+            const matchId = playerAssigment[playerId];
+            const result = playPlayerAction(playerId, x, y);
+            socket.emit('gameUpdate', result);
             console.log(`Sending gameUpdate to ${matchName}`);
-            if (ending.winner && ending.winner.length === 1) { // Match end only one player left
-                io.to(matchName).emit('gameStatus', ending);
+            const ending = havePlayersWinMatch(matchId);
+            if (ending.winner && ending.winner.length === 1) {
+                // Match end only one player left
+                io.to(matchName).emit('matchStatus', ending);
             }
         } catch (error) {
             if (error instanceof Error) {
-                socket.emit("error", { type: error.name, message: error.message });
+                socket.emit('error', { type: error.name, message: error.message });
             }
         }
     });
@@ -100,15 +101,14 @@ io.on('connection', (socket: Socket) => {
     socket.on('isGridValid', ({ cells }) => {
         try {
             const playerId = socket.id;
-            const result = hasPlayerWinGame(playerId, cells);
             const matchName = getMatchFromPlayerId(playerId).name;
-            socket.emit('gameStatus', result);
             console.log(`Received isGridValid event from ${playerId} in match ${matchName}`);
-            if (result.win)
-                io.to(matchName).emit('timerStart', { time: 0 }); // TODO:change with the left time
+            const result = hasPlayerWinGame(playerId, cells);
+            socket.emit('gameStatus', result);
+            if (result.win) io.to(matchName).emit('timerStart', { time: 0 }); // TODO:change with the left time
         } catch (error) {
             if (error instanceof Error) {
-                socket.emit("error", { type: error.name, message: error.message });
+                socket.emit('error', { type: error.name, message: error.message });
             }
         }
     });
@@ -125,7 +125,7 @@ io.on('connection', (socket: Socket) => {
             console.log(`Player disconnected: ${socket.id}`);
         } catch (error) {
             if (error instanceof Error) {
-                socket.emit("error", { type: error.name, message: error.message });
+                socket.emit('error', { type: error.name, message: error.message });
             }
         }
     });

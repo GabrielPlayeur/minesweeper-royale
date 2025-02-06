@@ -1,27 +1,27 @@
 export class MatchNotFoundError extends Error {
-    constructor(message = "Match not found") {
+    constructor(message = 'Match not found') {
         super(message);
-        this.name = "MatchNotFoundError";
+        this.name = 'MatchNotFoundError';
     }
 }
 
 export class NoMatchAssignedError extends Error {
-    constructor(message = "Player has no match assigned") {
+    constructor(message = 'Player has no match assigned') {
         super(message);
-        this.name = "NoMatchAssignedError";
+        this.name = 'NoMatchAssignedError';
     }
 }
 
 export class PlayerAlreadyInMatchError extends Error {
-    constructor(message = "Player is already in a match") {
+    constructor(message = 'Player is already in a match') {
         super(message);
-        this.name = "PlayerAlreadyInMatchError";
+        this.name = 'PlayerAlreadyInMatchError';
     }
 }
 
 export class PlayerNotInMatchError extends Error {
-    constructor(message = "Player is not in the select match") {
+    constructor(message = 'Player is not in the select match') {
         super(message);
-        this.name = "PlayerNotInMatchError";
+        this.name = 'PlayerNotInMatchError';
     }
 }

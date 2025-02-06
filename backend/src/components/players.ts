@@ -1,4 +1,4 @@
-import { PlayerNotFoundError } from "../errors/player.error";
+import { PlayerNotFoundError } from '../errors/player.error';
 
 export interface Player {
     name: string;

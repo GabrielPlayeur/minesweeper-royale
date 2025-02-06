@@ -23,9 +23,8 @@ export type Cell = {
 }
 
 export type initialGameState = {
-    grid?: Grid;
-    nb_bombs?: number;
-    error?: string;
+    grid: Grid;
+    nb_bombs: number;
 };
 
 type Result = {
@@ -33,8 +32,9 @@ type Result = {
     eliminated?: boolean;
 }
 
-export type ResultOnReveal = Result & {
+export type ResultOnReveal = {
     cells: Cell[];
+    eliminated: boolean;
 }
 
 export type ResultEndGame = Result & {
@@ -42,4 +42,20 @@ export type ResultEndGame = Result & {
     grid?: Grid;
     winner?: string[];
     eliminated?: string[];
+}
+
+export type ResultOnGame = {
+    win: boolean;
+    grid: Grid;
+    eliminated: boolean;
+}
+
+export type ResultOnMatch = {
+    winner: string[];
+    loser: string[];
+}
+
+export type ResultOnError = {
+    type: string;
+    message: string;
 }

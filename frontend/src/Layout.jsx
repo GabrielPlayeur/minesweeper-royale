@@ -1,6 +1,5 @@
 
 export default function Layout({ children }) {
-    console.log('Layout rendu');
     return (
         <div className="flex flex-col justify-between min-h-screen bg-slate-500 items-center overflow-hidden">
             <header className="w-full flex flex-row justify-between bg-slate-800 items-center py-3 md:py-6 text-lime-600 md:px-6 rounded-b-md shadow-2xl shadow-lime-500/60">

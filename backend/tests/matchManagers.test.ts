@@ -1,5 +1,9 @@
 import { config, Grid } from '../src/config/constants';
-import { MatchNotFoundError, NoMatchAssignedError, PlayerAlreadyInMatchError } from '../src/errors/match.error';
+import {
+    MatchNotFoundError,
+    NoMatchAssignedError,
+    PlayerAlreadyInMatchError,
+} from '../src/errors/match.error';
 import {
     matchs,
     playerAssigment,
@@ -141,7 +145,7 @@ describe('Match Managers module', () => {
         expect(ret).toEqual({ cells: [{ x: 3, y: 0, value: 1 }], eliminated: false });
 
         ret = playPlayerAction('123', 0, 0);
-        expect(ret).toEqual({cells: [], eliminated: true });
+        expect(ret).toEqual({ cells: [], eliminated: true });
         expect(playerAssigment).not.toHaveProperty('123');
         expect(matchs[0].players['123'].eliminated).toEqual(true);
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useSocket from "../hooks/useSocket";
 import { Card, CardContent } from "../components/ui/card";
+import { ResultOnError } from "../config/types";
 
 
 const Waiting = () => {
@@ -11,6 +12,10 @@ const Waiting = () => {
   const [nbPlayerPerMatch, setNbPlayerPerMatch] = useState(0);
 
   useEffect(() => {
+    socket.on("error", (error: ResultOnError) => {
+          console.error(error.type, error.message);
+    });
+
     socket.on("updateQueue", (data: { players: string[], nb_player_per_match: number }) => {
       setPlayersWaiting(data.players);
       setNbPlayerPerMatch(data.nb_player_per_match);
@@ -21,6 +26,7 @@ const Waiting = () => {
     });
 
     return () => {
+      socket.off("error");
       socket.off("updateQueue");
       socket.off("matchFound");
     };

@@ -47,7 +47,8 @@ export function getMatchFromPlayerId(playerId: string) {
 export function findMatch(playerId: string, playerName: string) {
     if (matchs.length === 0 || matchs[matchs.length - 1].launch === true)
         matchs.push(createNewMatch(matchs.length, 'match-' + matchs.length));
-    if (matchs[playerAssigment[playerId]]?.launch === false) // Player all ready in a match
+    if (matchs[playerAssigment[playerId]]?.launch === false)
+        // Player all ready in a match
         throw new PlayerAlreadyInMatchError();
     addPlayerInMatch(matchs[matchs.length - 1], playerId, playerName);
     playerAssigment[playerId] = matchs.length - 1;
