@@ -4,7 +4,7 @@ import useSocket from "../hooks/useSocket";
 import { Card, CardContent } from "../components/ui/card";
 
 
-const WaitingPage = () => {
+const Waiting = () => {
   const navigate = useNavigate();
   const socket = useSocket();
   const [playersWaiting, setPlayersWaiting] = useState<string[]>([]);
@@ -56,9 +56,9 @@ const WaitingPage = () => {
           );
         })}
       </div>
-      <button onClick={() => cancel()}>Cancel</button>
+      <button onClick={() => cancel()} className="">Cancel</button>
     </div>
   );
 };
 
-export default WaitingPage;
+export default Waiting;
