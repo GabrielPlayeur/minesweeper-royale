@@ -1,6 +1,6 @@
 export const config = {
-    GRID_SIZE: 50,
-    NB_BOMBS: 50,
+    GRID_SIZE: 15,
+    NB_BOMBS: 15,
     NB_PLAYER_PER_MATCH: 2,
 };
 export const DIRS: [number, number][] = [
