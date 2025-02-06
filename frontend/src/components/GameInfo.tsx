@@ -1,7 +1,7 @@
 import { NB_BOMBS } from "../hooks/useGameLogic";
 import AnimatedText from "./ui/animatedText";
 
-const GameStatus = ({ placedFlags, remainingCells, toggleDig, dig }: { placedFlags: number, remainingCells: number, toggleDig: () => void, dig: boolean }) => {
+const GameInfo = ({ placedFlags, remainingCells, toggleDig, dig }: { placedFlags: number, remainingCells: number, toggleDig: () => void, dig: boolean }) => {
 
   return (
     <div className="grid grid-cols-2 grid-rows-2 gap-3 md:gap-4 p-4">
@@ -19,4 +19,4 @@ const GameStatus = ({ placedFlags, remainingCells, toggleDig, dig }: { placedFla
 
 };
 
-export default GameStatus;
+export default GameInfo;

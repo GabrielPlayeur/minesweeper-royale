@@ -4,7 +4,7 @@ import { Stage } from "@pixi/react";
 import useSocket from "../hooks/useSocket";
 import useGameLogic from "../hooks/useGameLogic";
 import Cell from "../components/Cell";
-import GameStatus from "../components/GameStatus";
+import GameInfo from "../components/GameInfo";
 import { GRID_SIZE, CELL_SIZE } from "../config/constants";
 import LeaderBoard from "../components/LeaderBoard";
 
@@ -19,8 +19,8 @@ const Game = () => {
   return (
     <>
       <div className="flex flex-col-reverse md:flex-row justify-evenly items-center">
-        <div className="h-1/4 left-1/2 -translate-x-1/2 bottom-10 fixed">
-          <GameStatus placedFlags={placedFlags} remainingCells={remainingCells} toggleDig={toggleDig} dig={dig} />
+        <div className="h-1/4 fixed max-md:left-1/2 max-md:-translate-x-1/2 max-md:bottom-10 md:top-1/2 md:-translate-y-1/2 md:left-10">
+          <GameInfo placedFlags={placedFlags} remainingCells={remainingCells} toggleDig={toggleDig} dig={dig} />
         </div>
         <div className="h-1/4 top-20 right-10 fixed">
           <LeaderBoard />

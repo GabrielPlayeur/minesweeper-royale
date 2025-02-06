@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from "framer-motion";
+import { cn } from '../../utils/utils';
 
 interface AnimatedTextProps {
     text: string;
@@ -8,10 +9,6 @@ interface AnimatedTextProps {
 }
 
 const AnimatedText = ({ text, animatedText, className }: AnimatedTextProps) => {
-    function cn(...classNames: (string | undefined)[]): string {
-        return classNames.filter(Boolean).join(' ');
-    }
-
     const [key, setKey] = useState(0);
 
     useEffect(() => {
