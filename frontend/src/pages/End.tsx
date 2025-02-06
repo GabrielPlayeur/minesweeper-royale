@@ -7,7 +7,7 @@ const End = () => {
 
     return (
         <div>
-            <h1>{gameResult === "win" ? "🎉 You win !" : gameResult === "lose_bomb" ? "You lose by clicking on a bomb" : "You lose by time"}</h1>
+            <h1>{gameResult === "win" ? "🎉 You win!" : gameResult === "lose_bomb" ? "You lose by clicking on a bomb" : "You lose"}</h1>
             <button onClick={() => navigate("/")}>Replay</button>
         </div>
     );

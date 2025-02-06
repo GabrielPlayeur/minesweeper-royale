@@ -58,7 +58,7 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
       if (data.winner[0] === socket.id)
         navigate("/end", { state: { result: "win" } });
       else
-        navigate("/end", { state: { result: "lose_time" } });
+        navigate("/end", { state: { result: "lose" } });
     });
 
     return () => {
