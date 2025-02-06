@@ -37,11 +37,12 @@ const Game = () => {
           {grid.map((row, x) => row.map((cellValue, y) => (
             <Cell
               key={`${x}-${y}`}
+              defaultColor={(x & 1) ^ (y & 1) ? "#90EE90" : "#7ccf00"}
               cell={{ x, y, cellValue }}
               onClick={(event) => handleClick(event, { x, y })}
-              onContextMenu={(event) => handleRightClick(event, { x, y })} />
-          ))
-          )}
+              onContextMenu={(event) => handleRightClick(event, { x, y })}
+            />
+          )))}
         </Stage>
       </div>
     </>
