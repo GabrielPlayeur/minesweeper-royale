@@ -1,4 +1,5 @@
 import { config, Grid } from '../src/config/constants';
+import { MatchNotFoundError, NoMatchAssignedError, PlayerAlreadyInMatchError } from '../src/errors/match.error';
 import {
     matchs,
     playerAssigment,
@@ -12,6 +13,9 @@ import {
     getFirstGame,
     getPlayersName,
     havePlayersWinMatch,
+    getMatchFromPlayerId,
+    getPlayerAssignment,
+    getMatch,
 } from '../src/matchManagers';
 
 describe('Match Managers module', () => {
@@ -34,6 +38,28 @@ describe('Match Managers module', () => {
         clearMatchs();
     });
 
+    test('Get match id link to a player id', () => {
+        expect(() => getPlayerAssignment('123')).toThrow(NoMatchAssignedError);
+
+        findMatch('123', 'test');
+        var ret = getPlayerAssignment('123');
+        expect(ret).toEqual(0);
+    });
+
+    test('Get match link to an match id', () => {
+        expect(() => getMatch(0)).toThrow(MatchNotFoundError);
+
+        findMatch('123', 'test');
+        var ret = getMatch(0);
+        expect(ret).toEqual(matchs[0]);
+    });
+
+    test('Get match link to a player id', () => {
+        findMatch('123', 'test');
+        var ret = getMatchFromPlayerId('123');
+        expect(ret).toEqual(matchs[0]);
+    });
+
     test('Find a match for a player', () => {
         var ret = findMatch('123', 'test');
         expect(ret).toBe(matchs[0]);
@@ -41,13 +67,14 @@ describe('Match Managers module', () => {
         expect(playerAssigment['123']).toEqual(0);
         expect(matchs[0].nbPlayers).toEqual(1);
 
-        ret = findMatch('123', 'test');
-        expect(ret).toEqual(undefined);
-        expect(matchs.length).toEqual(1);
-        expect(playerAssigment['123']).toEqual(0);
-        expect(matchs[0].nbPlayers).toEqual(1);
+        expect(() => findMatch('123', 'test')).toThrow(PlayerAlreadyInMatchError);
 
         matchs[0].launch = true;
+        ret = findMatch('123', 'test');
+        expect(ret).toBe(matchs[1]);
+        expect(matchs.length).toEqual(2);
+        expect(playerAssigment['123']).toEqual(1);
+
         ret = findMatch('456', 'test2');
         expect(ret).toBe(matchs[1]);
         expect(matchs.length).toEqual(2);
@@ -55,36 +82,23 @@ describe('Match Managers module', () => {
     });
 
     test('Removes player from his current match', () => {
-        var ret = leaveMatch('123');
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
-        playerAssigment['123'] = 9;
-        ret = leaveMatch('123');
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
-        ret = leaveMatch('123');
-        expect(ret).toEqual({ match: matchs[0] });
+        var ret = leaveMatch('123');
+        expect(ret).toEqual(matchs[0]);
         expect(playerAssigment['123']).toEqual(undefined);
         expect(matchs[0].nbPlayers).toEqual(0);
     });
 
     test('Start a match', () => {
-        var ret = startMatch(0);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
-        ret = startMatch(0);
+        var ret = startMatch(0);
         expect(matchs[0].launch).toEqual(true);
         expect(ret).toEqual({ roomId: 0 });
     });
 
     test('Check if a match can be launch', () => {
-        var ret = canLaunchMatch(0);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
-        ret = canLaunchMatch(0);
+        var ret = canLaunchMatch(0);
         expect(ret).toEqual(false);
 
         for (let i = 0; i < config.NB_PLAYER_PER_MATCH - 1; i++) {
@@ -99,35 +113,21 @@ describe('Match Managers module', () => {
     });
 
     test('Check if a player win a game', () => {
-        var ret = hasPlayerWinGame('123', []);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
-        playerAssigment['123'] = 9;
-        ret = hasPlayerWinGame('123', []);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
         startMatch(0);
-        ret = hasPlayerWinGame('123', []);
-        expect(ret).toEqual({ win: false });
+        var ret = hasPlayerWinGame('123', []);
+        expect(ret).toEqual({ win: false, grid: [], eliminated: false });
 
         var bombs: string[] = Array.from(matchs[0].games[0].bombs);
         ret = hasPlayerWinGame('123', bombs);
-        expect(ret).toEqual({ win: true, grid: matchs[0].games[1].grid });
+        expect(ret).toEqual({ win: true, grid: matchs[0].games[1].grid, eliminated: false });
 
         matchs[0].players['123'].eliminated = true;
         ret = hasPlayerWinGame('123', []);
-        expect(ret).toEqual({ eliminated: true });
+        expect(ret).toEqual({ win: false, grid: [], eliminated: true });
     });
 
     test('Make the player action', () => {
-        var ret = playPlayerAction('123', 0, 0);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
-        playerAssigment['123'] = 9;
-        ret = playPlayerAction('123', 0, 0);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
         startMatch(0);
 
@@ -137,11 +137,11 @@ describe('Match Managers module', () => {
         matchs[0].games[0].grid = grid;
         matchs[0].games[0].solveGrid = solvedGrid;
 
-        ret = playPlayerAction('123', 3, 0);
-        expect(ret).toEqual({ cells: [{ x: 3, y: 0, value: 1 }] });
+        var ret = playPlayerAction('123', 3, 0);
+        expect(ret).toEqual({ cells: [{ x: 3, y: 0, value: 1 }], eliminated: false });
 
         ret = playPlayerAction('123', 0, 0);
-        expect(ret).toEqual({ eliminated: true });
+        expect(ret).toEqual({cells: [], eliminated: true });
         expect(playerAssigment).not.toHaveProperty('123');
         expect(matchs[0].players['123'].eliminated).toEqual(true);
 
@@ -149,13 +149,6 @@ describe('Match Managers module', () => {
     });
 
     test('Get the firt game of the match', () => {
-        var ret = getFirstGame('123');
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
-        playerAssigment['123'] = 9;
-        ret = getFirstGame('123');
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
         startMatch(0);
 
@@ -185,19 +178,8 @@ describe('Match Managers module', () => {
     });
 
     test('Check if a player win a match', () => {
-        var ret = havePlayersWinMatch(0);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
         findMatch('123', 'test');
-
-        ret = havePlayersWinMatch(1);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-        ret = havePlayersWinMatch(-1);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-        ret = havePlayersWinMatch(playerAssigment['456']);
-        expect(ret).toEqual({ error: 'NO_MATCH' });
-
-        ret = havePlayersWinMatch(0);
+        var ret = havePlayersWinMatch(0);
         expect(ret).toEqual({ winner: ['123'], loser: [] });
 
         findMatch('456', 'test2');

@@ -9,6 +9,7 @@ import {
     Match,
 } from '../src/components/matchs';
 import { config } from '../src/config/constants';
+import { PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../src/errors/match.error';
 
 describe('Matchs module', () => {
     let match: Match;
@@ -31,9 +32,9 @@ describe('Matchs module', () => {
     });
 
     test('Add a player in match', () => {
-        addPlayerInMatch(match, 'aze', 'test');
+        addPlayerInMatch(match, '123', 'test');
         expect(match.players).toEqual({
-            aze: {
+            '123': {
                 name: 'test',
                 match: 0,
                 level: 0,
@@ -43,28 +44,16 @@ describe('Matchs module', () => {
         });
         expect(match.nbPlayers).toEqual(1);
 
-        addPlayerInMatch(match, 'aze', 'test');
-        expect(match.players).toEqual({
-            aze: {
-                name: 'test',
-                match: 0,
-                level: 0,
-                progress: 0,
-                eliminated: false,
-            },
-        });
-        expect(match.nbPlayers).toEqual(1);
+        expect(() => addPlayerInMatch(match, '123', 'test')).toThrow(PlayerAlreadyInMatchError);
     });
 
     test('Remove a player from a match', () => {
-        addPlayerInMatch(match, 'aze', 'test');
-        removePlayerInMatch(match, 'aze');
+        addPlayerInMatch(match, '123', 'test');
+        removePlayerInMatch(match, '123');
         expect(match.players).toEqual({});
         expect(match.nbPlayers).toEqual(0);
 
-        removePlayerInMatch(match, 'aze');
-        expect(match.players).toEqual({});
-        expect(match.nbPlayers).toEqual(0);
+        expect(() => removePlayerInMatch(match, '123')).toThrow(PlayerNotInMatchError);
     });
 
     test('Increase match level', () => {
@@ -75,10 +64,10 @@ describe('Matchs module', () => {
     });
 
     test('Move player to the next level', () => {
-        incrPlayerToNextLevel(match, 'aze');
+        expect(() => incrPlayerToNextLevel(match, '123')).toThrow(PlayerNotInMatchError);
 
-        addPlayerInMatch(match, 'aze', 'test');
-        incrPlayerToNextLevel(match, 'aze');
+        addPlayerInMatch(match, '123', 'test');
+        incrPlayerToNextLevel(match, '123');
     });
 
     test('Check if a match is ready to start', () => {

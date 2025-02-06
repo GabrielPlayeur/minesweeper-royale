@@ -1,3 +1,5 @@
+import { PlayerNotFoundError } from "../errors/player.error";
+
 export interface Player {
     name: string;
     match: number;
@@ -19,6 +21,7 @@ export function addPlayer(players: Players, id: string, name: string, matchId: n
 }
 
 export function removePlayer(players: Players, id: string) {
+    if (players[id] === undefined) throw new PlayerNotFoundError();
     delete players[id];
 }
 
@@ -27,16 +30,17 @@ export function getAllPlayers(players: Players) {
 }
 
 export function getPlayer(players: Players, id: string) {
+    if (players[id] === undefined) throw new PlayerNotFoundError();
     return players[id];
 }
 
 export function setPlayerEliminated(players: Players, id: string) {
-    if (players[id] === undefined) return;
+    if (players[id] === undefined) throw new PlayerNotFoundError();
     players[id].eliminated = true;
 }
 
 export function incrPlayerLevel(players: Players, id: string) {
-    if (players[id] === undefined) return;
+    if (players[id] === undefined) throw new PlayerNotFoundError();
     players[id].level++;
     players[id].progress = 0;
 }

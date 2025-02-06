@@ -7,6 +7,7 @@ import {
     setPlayerEliminated,
     incrPlayerLevel,
 } from '../src/components/players';
+import { PlayerNotFoundError } from '../src/errors/player.error';
 
 describe('Players module', () => {
     let players: Players;
@@ -33,7 +34,7 @@ describe('Players module', () => {
         removePlayer(players, '123');
         expect(players).not.toHaveProperty('123');
 
-        removePlayer(players, '123');
+        expect(() => removePlayer(players, '123')).toThrow(PlayerNotFoundError);
     });
 
     test('Get all players', () => {
@@ -68,7 +69,7 @@ describe('Players module', () => {
             progress: 0,
             eliminated: false,
         });
-        expect(getPlayer(players, '456')).toEqual(undefined);
+        expect(() => getPlayer(players, '456')).toThrow(PlayerNotFoundError);
     });
 
     test('Set a player has eliminated', () => {
@@ -76,7 +77,7 @@ describe('Players module', () => {
         setPlayerEliminated(players, '123');
         expect(players['123'].eliminated).toBe(true);
 
-        setPlayerEliminated(players, '456');
+        expect(() => setPlayerEliminated(players, '456')).toThrow(PlayerNotFoundError);
     });
 
     test('Incr player level', () => {
@@ -85,6 +86,6 @@ describe('Players module', () => {
         expect(players['123'].level).toBe(1);
         expect(players['123'].progress).toBe(0);
 
-        incrPlayerLevel(players, '456');
+        expect(() => incrPlayerLevel(players, '456')).toThrow(PlayerNotFoundError);
     });
 });

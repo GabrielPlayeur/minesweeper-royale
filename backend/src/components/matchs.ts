@@ -1,4 +1,5 @@
 import { config } from '../config/constants';
+import { PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../errors/match.error';
 import { Game, generateGame } from './games';
 import { Players, addPlayer, getPlayer, incrPlayerLevel, removePlayer, setPlayerEliminated } from './players';
 
@@ -23,13 +24,13 @@ export function createNewMatch(id: number, name: string): Match {
 }
 
 export function addPlayerInMatch(match: Match, playerId: string, playerName: string) {
-    if (match.players[playerId] !== undefined) return;
+    if (match.players[playerId] !== undefined) throw new PlayerAlreadyInMatchError();
     addPlayer(match.players, playerId, playerName, match.id);
     match.nbPlayers++;
 }
 
 export function removePlayerInMatch(match: Match, playerId: string) {
-    if (match.players[playerId] === undefined) return;
+    if (match.players[playerId] === undefined) throw new PlayerNotInMatchError();
     removePlayer(match.players, playerId);
     match.nbPlayers--;
 }
@@ -41,7 +42,7 @@ export function incrToNextLevel(match: Match) {
 }
 
 export function incrPlayerToNextLevel(match: Match, playerId: string) {
-    if (match.players[playerId] === undefined) return;
+    if (match.players[playerId] === undefined) throw new PlayerNotInMatchError();
     incrPlayerLevel(match.players, playerId);
 }
 
