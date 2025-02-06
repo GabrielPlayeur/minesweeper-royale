@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useSocket from "../hooks/useSocket";
 import { Card, CardContent } from "../components/ui/card";
 import { ResultOnError } from "../config/types";
 
 
 const Waiting = () => {
+  const location = useLocation();
+  const playerName = location.state?.playerName || "player00";
   const navigate = useNavigate();
   const socket = useSocket();
   const [playersWaiting, setPlayersWaiting] = useState<string[]>([]);
   const [nbPlayerPerMatch, setNbPlayerPerMatch] = useState(0);
+
+  useEffect(() => {
+    socket.emit("joinQueue", playerName);
+  }, [socket]);
 
   useEffect(() => {
     socket.on("error", (error: ResultOnError) => {
@@ -55,7 +61,7 @@ const Waiting = () => {
                     <h3 className="text-lg font-bold">{player}</h3>
                   </>
                 ) : (
-                  <p className="text-gray-600">Slot vide</p>
+                  <p className="text-gray-600">Empty slot</p>
                 )}
               </CardContent>
             </Card>

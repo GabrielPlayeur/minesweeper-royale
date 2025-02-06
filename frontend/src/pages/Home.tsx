@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useSocket from "../hooks/useSocket";
 
 const Home = () => {
   const [playerName, setPlayerName] = useState(`Player${Math.floor(Math.random() * 100)}`);
   const navigate = useNavigate();
-  const socket = useSocket();
-
   const joinQueue = () => {
-    navigate("/matchmaking");
-    socket.emit("joinQueue", playerName);
+    navigate("/matchmaking", { state: { playerName } });
   };
 
   useEffect(() => {
