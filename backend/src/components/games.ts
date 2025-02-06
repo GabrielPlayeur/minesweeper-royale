@@ -111,6 +111,6 @@ export function revealCells(bombs: Bombs, solvedGrid: Grid, x: number, y: number
 
 export function getRemainingTime(game: Game) {
     if (game.closingTime === 0) return game.timer;
-    const t = game.timer - (Date.now() - game.closingTime)/1000
+    const t = game.timer - (Date.now() - game.closingTime) / 1000;
     return t <= 0 ? 0 : t;
 }
