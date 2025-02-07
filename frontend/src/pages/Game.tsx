@@ -11,8 +11,11 @@ import LeaderBoard from "../components/LeaderBoard";
 const Game = () => {
   const socket = useSocket();
   const { grid, dig, toggleDig, handleClick, handleRightClick, placedFlags, remainingCells } = useGameLogic(Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(-1)), socket);
+  const hasGame = useRef(false);
 
   useEffect(() => {
+    if (!socket || hasGame.current) return;
+    hasGame.current = true;
     socket.emit("requestGameState");
   }, [socket]);
 

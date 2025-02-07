@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useSocket from "../hooks/useSocket";
 import { Card, CardContent } from "../components/ui/card";
@@ -12,8 +12,11 @@ const Waiting = () => {
   const socket = useSocket();
   const [playersWaiting, setPlayersWaiting] = useState<string[]>([]);
   const [nbPlayerPerMatch, setNbPlayerPerMatch] = useState(0);
+  const hasJoinedQueue = useRef(false);
 
   useEffect(() => {
+    if (!socket || hasJoinedQueue.current) return;
+    hasJoinedQueue.current = true;
     socket.emit("joinQueue", playerName);
   }, [socket]);
 
