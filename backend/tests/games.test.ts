@@ -1,4 +1,4 @@
-import { Game, Bombs, generateGame, isGameWin, revealCells } from '../src/components/games';
+import { Game, Bombs, generateGame, isGameWin, revealCells, getRemainingTime } from '../src/components/games';
 import { TIMER_EVOLUTION, Grid, config } from '../src/config/constants';
 
 describe('Games module', () => {
@@ -66,5 +66,16 @@ describe('Games module', () => {
         expect(revealCells(bombs, solvedGrid, -1, -1)).toEqual([]);
 
         config.GRID_SIZE = originalValue;
+    });
+
+    test('Get remaining time', () => {
+        var game = generateGame(0);
+        expect(getRemainingTime(game)).toEqual(game.timer);
+
+        game.closingTime = Date.now();
+        expect(getRemainingTime(game)).toBeLessThan(10000);
+
+        game.closingTime = 10;
+        expect(getRemainingTime(game)).toEqual(0);
     });
 });

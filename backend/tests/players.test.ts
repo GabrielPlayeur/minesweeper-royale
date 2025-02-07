@@ -6,7 +6,9 @@ import {
     getPlayer,
     setPlayerEliminated,
     incrPlayerLevel,
+    incrPlayerProgress,
 } from '../src/components/players';
+import { PlayerNotFoundError } from '../src/errors/player.error';
 
 describe('Players module', () => {
     let players: Players;
@@ -23,7 +25,7 @@ describe('Players module', () => {
             name: 'Alice',
             match: 1,
             level: 0,
-            progress: 0,
+            progress: new Set(),
             eliminated: false,
         });
     });
@@ -33,7 +35,7 @@ describe('Players module', () => {
         removePlayer(players, '123');
         expect(players).not.toHaveProperty('123');
 
-        removePlayer(players, '123');
+        expect(() => removePlayer(players, '123')).toThrow(PlayerNotFoundError);
     });
 
     test('Get all players', () => {
@@ -46,14 +48,14 @@ describe('Players module', () => {
                 name: 'Alice',
                 match: 1,
                 level: 0,
-                progress: 0,
+                progress: new Set(),
                 eliminated: false,
             },
             '456': {
                 name: 'Bob',
                 match: 2,
                 level: 0,
-                progress: 0,
+                progress: new Set(),
                 eliminated: false,
             },
         });
@@ -65,10 +67,10 @@ describe('Players module', () => {
             name: 'Alice',
             match: 1,
             level: 0,
-            progress: 0,
+            progress: new Set(),
             eliminated: false,
         });
-        expect(getPlayer(players, '456')).toEqual(undefined);
+        expect(() => getPlayer(players, '456')).toThrow(PlayerNotFoundError);
     });
 
     test('Set a player has eliminated', () => {
@@ -76,15 +78,25 @@ describe('Players module', () => {
         setPlayerEliminated(players, '123');
         expect(players['123'].eliminated).toBe(true);
 
-        setPlayerEliminated(players, '456');
+        expect(() => setPlayerEliminated(players, '456')).toThrow(PlayerNotFoundError);
     });
 
     test('Incr player level', () => {
         addPlayer(players, '123', 'Alice', 1);
         incrPlayerLevel(players, '123');
         expect(players['123'].level).toBe(1);
-        expect(players['123'].progress).toBe(0);
+        expect(players['123'].progress).toEqual(new Set());
 
-        incrPlayerLevel(players, '456');
+        expect(() => incrPlayerLevel(players, '456')).toThrow(PlayerNotFoundError);
+    });
+
+    test('Incr player progress', () => {
+        addPlayer(players, '123', 'Alice', 1);
+        incrPlayerProgress(players, '123', [{ x: 0, y: 0, value: 0 }]);
+        expect(players['123'].progress.size).toEqual(1);
+
+        expect(() => incrPlayerProgress(players, '456', [{ x: 0, y: 0, value: 0 }])).toThrow(
+            PlayerNotFoundError
+        );
     });
 });

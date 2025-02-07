@@ -6,12 +6,6 @@ const socket: Socket = io("http://localhost:3000");
 const useSocket = (): Socket => {
 
   useEffect(() => {
-    console.log("Connecting to WebSocket...");
-
-    if (socket.connected) {
-      console.log("Socket already connected");
-    }
-
     socket.on("connect", () => {
       console.log("Connected to WebSocket");
     });

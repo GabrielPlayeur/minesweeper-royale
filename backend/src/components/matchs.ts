@@ -1,5 +1,7 @@
 import { config } from '../config/constants';
-import { Game, generateGame } from './games';
+import { GameNotFoundError } from '../errors/game.error';
+import { MatchNotFoundError, PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../errors/match.error';
+import { Game, generateGame, getRemainingTime } from './games';
 import { Players, addPlayer, getPlayer, incrPlayerLevel, removePlayer, setPlayerEliminated } from './players';
 
 type Games = Game[];
@@ -14,6 +16,19 @@ export interface Match {
     launch: boolean;
 }
 
+export function getGame(match: Match, level: number): Game {
+    if (level === null || level === undefined || level < 0 || level >= match.games.length) {
+        console.log(`ERROR: Invalid game level: ${level}`);
+        throw new GameNotFoundError();
+    }
+    return match.games[level];
+}
+
+export function getGameRemainingTime(match: Match, level: number) {
+    const game = getGame(match, level);
+    return getRemainingTime(game);
+}
+
 export function createNewMatch(id: number, name: string): Match {
     var games = [];
     var players = {};
@@ -23,13 +38,13 @@ export function createNewMatch(id: number, name: string): Match {
 }
 
 export function addPlayerInMatch(match: Match, playerId: string, playerName: string) {
-    if (match.players[playerId] !== undefined) return;
+    if (match.players[playerId] !== undefined) throw new PlayerAlreadyInMatchError();
     addPlayer(match.players, playerId, playerName, match.id);
     match.nbPlayers++;
 }
 
 export function removePlayerInMatch(match: Match, playerId: string) {
-    if (match.players[playerId] === undefined) return;
+    if (match.players[playerId] === undefined) throw new PlayerNotInMatchError();
     removePlayer(match.players, playerId);
     match.nbPlayers--;
 }
@@ -41,7 +56,7 @@ export function incrToNextLevel(match: Match) {
 }
 
 export function incrPlayerToNextLevel(match: Match, playerId: string) {
-    if (match.players[playerId] === undefined) return;
+    if (match.players[playerId] === undefined) throw new PlayerNotInMatchError();
     incrPlayerLevel(match.players, playerId);
 }
 

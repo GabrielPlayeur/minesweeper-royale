@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { countFlags, countRemainingCells, getNeighbors, getRemainingCells, } from "../utils/gridHelpers";
 import { Socket } from "socket.io-client";
-import { Grid, initialGameState, ResultEndGame, ResultOnReveal, XY } from "../config/types";
+import { Grid, initialGameState, ResultEndGame, ResultOnError, ResultOnGame, ResultOnMatch, ResultOnReveal, XY } from "../config/types";
 
 export let NB_BOMBS = -1;
 
@@ -25,56 +25,48 @@ const useGameLogic = (initialGrid: Grid, socket: Socket) => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("gameState", (data: initialGameState) => {
-      if (data.error === "NO_MATCH") {
-        console.warn("No match assigned! Redirecting...");
-        window.location.href = "/";
-      } else if (data.grid) {
-        setGrid([...data.grid.map(row => [...row])]);
-        NB_BOMBS = data.nb_bombs!;    // #TODO: verify if data.nb_bombs is not null
+    socket.on("error", (error: ResultOnError) => {
+      console.error(error.type, error.message);
+    });
 
-      }
+    socket.on("gameState", (data: initialGameState) => {
+      setGrid([...data.grid.map(row => [...row])]);
+      NB_BOMBS = data.nb_bombs!;    // #TODO: verify if data.nb_bombs is not null
     });
 
     socket.on("gameUpdate", (data: ResultOnReveal) => {
-      if (data.error === "NO_MATCH") {
-        console.warn("No match assigned! Redirecting...");
-        window.location.href = "/";
-      } else if (data.eliminated) {
+      if (data.eliminated === true) {
         navigate("/end", { state: { result: "lose_bomb" } });
-      } else if (data.cells) {
-        setGrid((prevGrid) => {
-          const newGrid = [...prevGrid];
-          data.cells.forEach(cell => (newGrid[cell.x][cell.y] = cell.value));
-          return newGrid;
-        });
+        return;
+      }
+      setGrid((prevGrid) => {
+        const newGrid = [...prevGrid];
+        data.cells.forEach(cell => (newGrid[cell.x][cell.y] = cell.value));
+        return newGrid;
+      });
+    });
+
+    socket.on("gameStatus", (data: ResultOnGame) => {
+      if (data.eliminated === true) {
+        navigate("/end", { state: { result: "lose" } });
+      } else if (data.win && data.grid) {
+        setGrid(data.grid);
       }
     });
 
-    socket.on("gameStatus", (data) => {
-      if (data.error === "NO_MATCH") {
-        console.warn("No match assigned! Redirecting...");
-        window.location.href = "/";
-      } else if (data.eliminated) {
-        console.log("lose");
+    socket.on("matchStatus", (data: ResultOnMatch) => {
+      if (data.winner[0] === socket.id)
+        navigate("/end", { state: { result: "win" } });
+      else
         navigate("/end", { state: { result: "lose" } });
-      } else if (data.win && data.grid) {
-        setGrid(data.grid); // game win
-      }  else if (data.winner){
-        if (data.winner[0] === socket.id){
-          console.log("win");
-          navigate("/end", { state: { result: "win" } }); // match win
-        }
-        else{
-          navigate("/end", { state: { result: "lose_time" } });
-        }
-      }
     });
 
     return () => {
+      socket.off("error");
       socket.off("gameState");
       socket.off("gameUpdate");
       socket.off("gameStatus");
+      socket.off("matchStatus");
     };
   }, [socket]);
 

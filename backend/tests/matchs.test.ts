@@ -7,8 +7,12 @@ import {
     isMatchReadyToStart,
     checkTimeouts,
     Match,
+    getGame,
+    getGameRemainingTime,
 } from '../src/components/matchs';
 import { config } from '../src/config/constants';
+import { GameNotFoundError } from '../src/errors/game.error';
+import { PlayerAlreadyInMatchError, PlayerNotInMatchError } from '../src/errors/match.error';
 
 describe('Matchs module', () => {
     let match: Match;
@@ -31,40 +35,28 @@ describe('Matchs module', () => {
     });
 
     test('Add a player in match', () => {
-        addPlayerInMatch(match, 'aze', 'test');
+        addPlayerInMatch(match, '123', 'test');
         expect(match.players).toEqual({
-            aze: {
+            '123': {
                 name: 'test',
                 match: 0,
                 level: 0,
-                progress: 0,
+                progress: new Set(),
                 eliminated: false,
             },
         });
         expect(match.nbPlayers).toEqual(1);
 
-        addPlayerInMatch(match, 'aze', 'test');
-        expect(match.players).toEqual({
-            aze: {
-                name: 'test',
-                match: 0,
-                level: 0,
-                progress: 0,
-                eliminated: false,
-            },
-        });
-        expect(match.nbPlayers).toEqual(1);
+        expect(() => addPlayerInMatch(match, '123', 'test')).toThrow(PlayerAlreadyInMatchError);
     });
 
     test('Remove a player from a match', () => {
-        addPlayerInMatch(match, 'aze', 'test');
-        removePlayerInMatch(match, 'aze');
+        addPlayerInMatch(match, '123', 'test');
+        removePlayerInMatch(match, '123');
         expect(match.players).toEqual({});
         expect(match.nbPlayers).toEqual(0);
 
-        removePlayerInMatch(match, 'aze');
-        expect(match.players).toEqual({});
-        expect(match.nbPlayers).toEqual(0);
+        expect(() => removePlayerInMatch(match, '123')).toThrow(PlayerNotInMatchError);
     });
 
     test('Increase match level', () => {
@@ -75,10 +67,10 @@ describe('Matchs module', () => {
     });
 
     test('Move player to the next level', () => {
-        incrPlayerToNextLevel(match, 'aze');
+        expect(() => incrPlayerToNextLevel(match, '123')).toThrow(PlayerNotInMatchError);
 
-        addPlayerInMatch(match, 'aze', 'test');
-        incrPlayerToNextLevel(match, 'aze');
+        addPlayerInMatch(match, '123', 'test');
+        incrPlayerToNextLevel(match, '123');
     });
 
     test('Check if a match is ready to start', () => {
@@ -103,5 +95,18 @@ describe('Matchs module', () => {
         checkTimeouts(match);
         expect(match.players['123'].eliminated).toEqual(false);
         expect(match.players['456'].eliminated).toEqual(true);
+    });
+
+    test('Get a game', () => {
+        expect(() => getGame(match, 1)).toThrow(GameNotFoundError);
+
+        addPlayerInMatch(match, '123', 'test');
+        var ret = getGame(match, 0);
+        expect(ret).toEqual(match.games[0]);
+    });
+
+    test('Get a game', () => {
+        addPlayerInMatch(match, '123', 'test');
+        var ret = getGameRemainingTime(match, 0);
     });
 });
