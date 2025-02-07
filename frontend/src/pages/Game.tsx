@@ -32,7 +32,8 @@ const Game = () => {
           {grid.map((row, x) => row.map((cellValue, y) => (
             <Cell
               key={`${x}-${y}`}
-              defaultColor={(x & 1) ^ (y & 1) ? "#5ea500" : "#7ccf00"}
+              secondaryColor={(x & 1) ^ (y & 1) ? "#5ea500" : "#7ccf00"}
+              defaultColor={(x & 1) ^ (y & 1) ? "#d7b899" : "#e5c29f"}
               cell={{ x, y, cellValue }}
               onClick={(event) => handleClick(event, { x, y })}
               onContextMenu={(event) => handleRightClick(event, { x, y })}

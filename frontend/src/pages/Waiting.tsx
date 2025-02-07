@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useSocket from "../hooks/useSocket";
 import { Card, CardContent } from "../components/ui/card";
+import StyledButton from "../components/ui/Button";
 
 
 const Waiting = () => {
@@ -56,7 +57,7 @@ const Waiting = () => {
           );
         })}
       </div>
-      <button onClick={() => cancel()} className="">Cancel</button>
+      <StyledButton onClick={() => cancel()} className="">Cancel</StyledButton>
     </div>
   );
 };
