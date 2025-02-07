@@ -45,7 +45,7 @@ io.on('connection', (socket: Socket) => {
             }
         } catch (error) {
             if (error instanceof Error) {
-                console.log('ERROR:', { type: error.name, message: error.message })
+                console.log('ERROR:', { type: error.name, message: error.message });
                 socket.emit('error', { type: error.name, message: error.message });
             }
         }
@@ -62,7 +62,7 @@ io.on('connection', (socket: Socket) => {
             });
         } catch (error) {
             if (error instanceof Error) {
-                console.log('ERROR:', { type: error.name, message: error.message })
+                console.log('ERROR:', { type: error.name, message: error.message });
                 socket.emit('error', { type: error.name, message: error.message });
             }
         }
@@ -76,7 +76,7 @@ io.on('connection', (socket: Socket) => {
             socket.emit('gameState', initialGameState);
         } catch (error) {
             if (error instanceof Error) {
-                console.log('ERROR:', { type: error.name, message: error.message })
+                console.log('ERROR:', { type: error.name, message: error.message });
                 socket.emit('error', { type: error.name, message: error.message });
             }
         }
@@ -99,7 +99,7 @@ io.on('connection', (socket: Socket) => {
             }
         } catch (error) {
             if (error instanceof Error) {
-                console.log('ERROR:', { type: error.name, message: error.message })
+                console.log('ERROR:', { type: error.name, message: error.message });
                 socket.emit('error', { type: error.name, message: error.message });
             }
         }
@@ -119,7 +119,7 @@ io.on('connection', (socket: Socket) => {
                 });
         } catch (error) {
             if (error instanceof Error) {
-                console.log('ERROR:', { type: error.name, message: error.message })
+                console.log('ERROR:', { type: error.name, message: error.message });
                 socket.emit('error', { type: error.name, message: error.message });
             }
         }
@@ -137,7 +137,7 @@ io.on('connection', (socket: Socket) => {
             console.log(`Player disconnected: ${socket.id}`);
         } catch (error) {
             if (error instanceof Error) {
-                console.log('ERROR:', { type: error.name, message: error.message })
+                console.log('ERROR:', { type: error.name, message: error.message });
                 socket.emit('error', { type: error.name, message: error.message });
             }
         }
